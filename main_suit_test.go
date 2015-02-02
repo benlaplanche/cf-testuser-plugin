@@ -11,7 +11,7 @@ import (
 func TestMain(t *testing.T) {
 	RegisterFailHandler(Fail)
 
-	plugin_builder.BuildTestBinary(".", "call_cli_cmd")
+	plugin_builder.BuildTestBinary(".", "test-user")
 
 	RunSpecs(t, "Main Suite")
 }

@@ -21,7 +21,7 @@ func (c *TestUser) GetMetadata() plugin.PluginMetadata {
 			Build: 0,
 		},
 		Commands: []plugin.Command{
-			{
+			plugin.Command{
 				Name:     "test-user",
 				HelpText: "Command to create a test user and development org & space and grant all permissions",
 				UsageDetails: plugin.Usage{
