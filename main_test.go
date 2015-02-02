@@ -1,11 +1,11 @@
 package main_test
 
 import (
-	. "github.com/benlaplanche/cf-testuser-plugin"
+	"github.com/benlaplanche/cf-testuser-plugin/main"
 	"github.com/cloudfoundry/cli/plugin/fakes"
 	io_helpers "github.com/cloudfoundry/cli/testhelpers/io"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
+	"github.com/onsi/ginkgo"
+	"github.com/onsi/gomega"
 )
 
 var _ = Describe("TestUserCmd", func() {

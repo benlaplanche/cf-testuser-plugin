@@ -7,11 +7,6 @@ import (
 
 type TestUser struct{}
 
-func (c *TestUser) Run(cliConnection plugin.CliConnection, args []string) {
-	fmt.Println("running the new test user command")
-	fmt.Println(args)
-}
-
 func (c *TestUser) GetMetadata() plugin.PluginMetadata {
 	return plugin.PluginMetadata{
 		Name: "TestUser",
@@ -21,7 +16,7 @@ func (c *TestUser) GetMetadata() plugin.PluginMetadata {
 			Build: 0,
 		},
 		Commands: []plugin.Command{
-			plugin.Command{
+			{
 				Name:     "test-user",
 				HelpText: "Command to create a test user and development org & space and grant all permissions",
 				UsageDetails: plugin.Usage{
@@ -34,4 +29,9 @@ func (c *TestUser) GetMetadata() plugin.PluginMetadata {
 
 func main() {
 	plugin.Start(new(TestUser))
+}
+
+func (c *TestUser) Run(cliConnection plugin.CliConnection, args []string) {
+	fmt.Println("running the new test user command")
+	fmt.Println(args)
 }
