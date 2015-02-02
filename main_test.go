@@ -1,8 +1,8 @@
 package main_test
 
 import (
+	. "github.com/benlaplanche/cf-testuser-plugin"
 	"github.com/cloudfoundry/cli/plugin/fakes"
-	. "github.com/cloudfoundry/cli/plugin_examples/call_cli_cmd/main"
 	io_helpers "github.com/cloudfoundry/cli/testhelpers/io"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
