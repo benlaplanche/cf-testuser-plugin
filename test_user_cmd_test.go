@@ -19,12 +19,13 @@ var _ = Describe("TestUserCmd", func() {
 		})
 
 		It("returns the correct output", func() {
-			io_helpers.CaptureOutput(func() {
+			fakeCliConnection.CliCommandReturns([]string{"test-user"}, nil)
+			output := io_helpers.CaptureOutput(func() {
 				callCliCommandPlugin.Run(fakeCliConnection, []string{"test-user"})
 			})
 
-			Expect(fakeCliConnection.CliCommandArgsForCall(0)[0]).To(Equal("running the new test user command"))
-			Expect(fakeCliConnection.CliCommandArgsForCall(0)[0]).To(Equal("test-user"))
+			Expect(output[0]).To(Equal("running the new test user command"))
+			Expect(output[1]).To(Equal("[test-user]"))
 		})
 	})
 })
