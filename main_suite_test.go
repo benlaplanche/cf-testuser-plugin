@@ -2,8 +2,8 @@ package main_test
 
 import (
 	"github.com/cloudfoundry/cli/testhelpers/plugin_builder"
-	"github.com/onsi/ginkgo"
-	"github.com/onsi/gomega"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 
 	"testing"
 )
