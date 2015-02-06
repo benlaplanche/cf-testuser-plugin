@@ -18,14 +18,23 @@ var _ = Describe("TestUserCmd", func() {
 			callCliCommandPlugin = &TestUser{}
 		})
 
-		It("returns the correct output", func() {
-			fakeCliConnection.CliCommandReturns([]string{"test-user"}, nil)
+		It("returns an error if incorrect number of args supplied", func() {
+
 			output := io_helpers.CaptureOutput(func() {
 				callCliCommandPlugin.Run(fakeCliConnection, []string{"test-user"})
 			})
 
-			Expect(output[0]).To(Equal("running the new test user command"))
-			Expect(output[1]).To(Equal("[test-user]"))
+			Expect(output[0]).To(Equal("Incorrect usage"))
+			Expect(output[1]).To(Equal("cf test-user <username> <password>"))
 		})
+
+		It("creates an Organisation", func() {
+			output := io_helpers.CaptureOutput(func() {
+				callCliCommandPlugin.Run(fakeCliConnection, []string{"test-user,me,password"})
+			})
+
+			Expect(output[0]).To(Equal("success"))
+		})
+
 	})
 })

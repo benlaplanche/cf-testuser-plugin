@@ -18,9 +18,9 @@ func (c *TestUser) GetMetadata() plugin.PluginMetadata {
 		Commands: []plugin.Command{
 			{
 				Name:     "test-user",
-				HelpText: "Command to create a test user and development org & space and grant all permissions",
+				HelpText: "Command to create a passed in user and development org & space and grant all permissions",
 				UsageDetails: plugin.Usage{
-					Usage: "test-user username password",
+					Usage: "cf test-user <username> <password>",
 				},
 			},
 		},
@@ -32,6 +32,10 @@ func main() {
 }
 
 func (c *TestUser) Run(cliConnection plugin.CliConnection, args []string) {
-	fmt.Println("running the new test user command")
-	fmt.Println(args)
+
+	if len(args) < 3 {
+		fmt.Println(args)
+		fmt.Println("Incorrect usage")
+		fmt.Println(c.GetMetadata().Commands[0].UsageDetails.Usage)
+	}
 }
