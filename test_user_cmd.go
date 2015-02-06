@@ -34,8 +34,13 @@ func main() {
 func (c *TestUser) Run(cliConnection plugin.CliConnection, args []string) {
 
 	if len(args) < 3 {
-		fmt.Println(args)
 		fmt.Println("Incorrect usage")
 		fmt.Println(c.GetMetadata().Commands[0].UsageDetails.Usage)
+	} else {
+		c.CreateUser(args)
 	}
+}
+
+func (c *TestUser) CreateUser(args []string) {
+	fmt.Print("success")
 }

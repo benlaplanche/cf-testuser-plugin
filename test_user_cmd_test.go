@@ -30,7 +30,7 @@ var _ = Describe("TestUserCmd", func() {
 
 		It("creates an Organisation", func() {
 			output := io_helpers.CaptureOutput(func() {
-				callCliCommandPlugin.Run(fakeCliConnection, []string{"test-user,me,password"})
+				callCliCommandPlugin.Run(fakeCliConnection, []string{"test-user", "me", "password"})
 			})
 
 			Expect(output[0]).To(Equal("success"))
