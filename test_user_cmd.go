@@ -42,5 +42,6 @@ func (c *TestUser) Run(cliConnection plugin.CliConnection, args []string) {
 }
 
 func (c *TestUser) CreateUser(args []string) {
-	fmt.Print("success")
+	fmt.Println("username = ", args[1])
+	fmt.Println("password = ", args[2])
 }

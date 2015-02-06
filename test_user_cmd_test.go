@@ -33,7 +33,8 @@ var _ = Describe("TestUserCmd", func() {
 				callCliCommandPlugin.Run(fakeCliConnection, []string{"test-user", "me", "password"})
 			})
 
-			Expect(output[0]).To(Equal("success"))
+			Expect(output[0]).To(Equal("username = me"))
+			Expect(output[1]).To(Equal("password = password"))
 		})
 
 	})
