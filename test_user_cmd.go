@@ -40,6 +40,8 @@ func (c *TestUser) Run(cliConnection plugin.CliConnection, args []string) {
 	} else {
 		c.CreateUser(cliConnection, args)
 		c.CreateOrg(cliConnection, args)
+		c.CreateSpace(cliConnection, args)
+		c.AssignOrgRole(cliConnection, args)
 	}
 }
 
@@ -66,6 +68,32 @@ func (c *TestUser) CreateOrg(cliConnection plugin.CliConnection, args []string) 
 		fmt.Println(err)
 	} else {
 		fmt.Println(colorstring.Color("[green][2/10]  Created Organisation development"))
+		fmt.Println(output)
+	}
+}
+
+func (c *TestUser) CreateSpace(cliConnection plugin.CliConnection, args []string) {
+
+	output, err := cliConnection.CliCommandWithoutTerminalOutput("create-space", "development", "-o", "development")
+
+	if err != nil {
+		fmt.Println(colorstring.Color("[red][3/10]  Created Space development"))
+		fmt.Println(err)
+	} else {
+		fmt.Println(colorstring.Color("[green][3/10]  Created Space development"))
+		fmt.Println(output)
+	}
+}
+
+func (c *TestUser) AssignOrgRole(cliConnection plugin.CliConnection, args []string) {
+
+	output, err := cliConnection.CliCommandWithoutTerminalOutput("set-org-role", args[0], "OrgManager")
+
+	if err != nil {
+		fmt.Println(colorstring.Color("[red][4/10]  Assigned OrgManager to me in Org development"))
+		fmt.Println(err)
+	} else {
+		fmt.Println(colorstring.Color("[green][4/10]  Assigned OrgManager to me in Org development"))
 		fmt.Println(output)
 	}
 }
