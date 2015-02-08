@@ -1,6 +1,7 @@
 package main_test
 
 import (
+	"fmt"
 	. "github.com/benlaplanche/cf-testuser-plugin"
 	"github.com/cloudfoundry/cli/plugin/fakes"
 	io_helpers "github.com/cloudfoundry/cli/testhelpers/io"
@@ -33,13 +34,11 @@ var _ = Describe("TestUserCmd", func() {
 			output := io_helpers.CaptureOutput(func() {
 				callCliCommandPlugin.Run(fakeCliConnection, []string{"test-user", "me", "password"})
 			})
-
+			fmt.Println(output)
 			Expect(output[0]).To(Equal(colorstring.Color("[green][1/10]  Created user me")))
 
-			// Expect(output[1]).To(Equal("Creating user me as admin..."))
-			// Expect(output[1]).To(Equal("OK"))
-			// Expect(output[2]).To(Equal(""))
-			// Expect(output[3]).To(Equal("TIP: Assign roles with 'cf set-org-role' and 'cf set-space-role'"))
+			Expect(output[2]).To(Equal(colorstring.Color("[green][2/10]  Created Organisation development")))
+
 		})
 
 	})

@@ -39,6 +39,7 @@ func (c *TestUser) Run(cliConnection plugin.CliConnection, args []string) {
 		fmt.Println(c.GetMetadata().Commands[0].UsageDetails.Usage)
 	} else {
 		c.CreateUser(cliConnection, args)
+		c.CreateOrg(cliConnection, args)
 	}
 }
 
@@ -48,10 +49,23 @@ func (c *TestUser) CreateUser(cliConnection plugin.CliConnection, args []string)
 
 	if err != nil {
 		fmt.Println(colorstring.Color("[red][1/10]  Created user " + args[1]))
-		// fmt.Println(err)
+		fmt.Println(err)
 	} else {
 		fmt.Println(colorstring.Color("[green][1/10]  Created user " + args[1]))
 		fmt.Println(output)
 	}
 
+}
+
+func (c *TestUser) CreateOrg(cliConnection plugin.CliConnection, args []string) {
+
+	output, err := cliConnection.CliCommandWithoutTerminalOutput("create-org", "development")
+
+	if err != nil {
+		fmt.Println(colorstring.Color("[red][2/10]  Created Organisation development"))
+		fmt.Println(err)
+	} else {
+		fmt.Println(colorstring.Color("[green][2/10]  Created Organisation development"))
+		fmt.Println(output)
+	}
 }
