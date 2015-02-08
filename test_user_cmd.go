@@ -41,9 +41,16 @@ func (c *TestUser) Run(cliConnection plugin.CliConnection, args []string) {
 		c.CreateUser(cliConnection, args)
 		c.CreateOrg(cliConnection, args)
 		c.CreateSpace(cliConnection, args)
+
 		c.AssignOrgRole(cliConnection, args, "OrgManager", "4")
 		c.AssignOrgRole(cliConnection, args, "BillingManager", "5")
 		c.AssignOrgRole(cliConnection, args, "OrgAuditor", "6")
+
+		c.AssignSpaceRole(cliConnection, args, "SpaceManager", "7")
+		c.AssignSpaceRole(cliConnection, args, "SpaceDeveloper", "8")
+		c.AssignSpaceRole(cliConnection, args, "SpaceAuditor", "9")
+
+		c.SwitchUser(cliConnection, args)
 	}
 }
 
@@ -89,7 +96,7 @@ func (c *TestUser) CreateSpace(cliConnection plugin.CliConnection, args []string
 
 func (c *TestUser) AssignOrgRole(cliConnection plugin.CliConnection, args []string, role string, i string) {
 
-	output, err := cliConnection.CliCommandWithoutTerminalOutput("set-org-role", args[0], role)
+	output, err := cliConnection.CliCommand("set-org-role", args[1], "development", role)
 
 	if err != nil {
 		fmt.Println(colorstring.Color("[red][" + i + "/10]  Assigned " + role + " to me in Org development"))
@@ -98,4 +105,22 @@ func (c *TestUser) AssignOrgRole(cliConnection plugin.CliConnection, args []stri
 		fmt.Println(colorstring.Color("[green][" + i + "/10]  Assigned " + role + " to me in Org development"))
 		fmt.Println(output)
 	}
+}
+
+func (c *TestUser) AssignSpaceRole(cliConnection plugin.CliConnection, args []string, role string, i string) {
+
+	output, err := cliConnection.CliCommand("set-space-role", args[1], "development", "development", role)
+
+	if err != nil {
+		fmt.Println(colorstring.Color("[red][" + i + "/10]  Assigned " + role + " to me in Space development"))
+		fmt.Println(err)
+	} else {
+		fmt.Println(colorstring.Color("[green][" + i + "/10]  Assigned " + role + " to me in Space development"))
+		fmt.Println(output)
+	}
+}
+
+func (c *TestUser) SwitchUser(cliConnection plugin.CliConnection, args []string) {
+
+	fmt.Println(colorstring.Color("[green][10/10]  Logged out and logged in as " + args[1]))
 }
