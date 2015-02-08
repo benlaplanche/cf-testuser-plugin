@@ -18,6 +18,10 @@
 			"Rev": "393ac97914548206400cdb1718fe56c3e8fd3c04"
 		},
 		{
+			"ImportPath": "github.com/mitchellh/colorstring",
+			"Rev": "15fc698eaae194ff160846daf77922a45b9290a7"
+		},
+		{
 			"ImportPath": "github.com/onsi/ginkgo",
 			"Comment": "v1.0.0-28-g6481765",
 			"Rev": "6481765dda39cbaae281109e6945449642329197"

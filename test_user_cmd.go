@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/cloudfoundry/cli/plugin"
+	"github.com/mitchellh/colorstring"
 )
 
 type TestUser struct{}
@@ -37,11 +38,20 @@ func (c *TestUser) Run(cliConnection plugin.CliConnection, args []string) {
 		fmt.Println("Incorrect usage")
 		fmt.Println(c.GetMetadata().Commands[0].UsageDetails.Usage)
 	} else {
-		c.CreateUser(args)
+		c.CreateUser(cliConnection, args)
 	}
 }
 
-func (c *TestUser) CreateUser(args []string) {
-	fmt.Println("username = ", args[1])
-	fmt.Println("password = ", args[2])
+func (c *TestUser) CreateUser(cliConnection plugin.CliConnection, args []string) {
+
+	output, err := cliConnection.CliCommandWithoutTerminalOutput("create-user", args[1], args[2])
+
+	if err != nil {
+		fmt.Println(colorstring.Color("[red][1/10]  Created user " + args[1]))
+		// fmt.Println(err)
+	} else {
+		fmt.Println(colorstring.Color("[green][1/10]  Created user " + args[1]))
+		fmt.Println(output)
+	}
+
 }

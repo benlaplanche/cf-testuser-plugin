@@ -1,0 +1,5 @@
+#/bin/bash
+
+cf uninstall-plugin TestUser
+go build test_user_cmd.go
+cf install-plugin test_user_cmd
