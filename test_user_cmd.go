@@ -8,17 +8,30 @@ import (
 
 type TestUser struct{}
 
-var commands = []string{
-	c.CreateUser(cliConnection, args),
-	c.CreateOrg(cliConnection, args),
-	c.CreateSpace(cliConnection, args),
-	c.AssignOrgRole(cliConnection, args, "OrgManager", "4"),
-	c.AssignOrgRole(cliConnection, args, "BillingManager", "5"),
-	c.AssignOrgRole(cliConnection, args, "OrgAuditor", "6"),
-	c.AssignSpaceRole(cliConnection, args, "SpaceManager", "7"),
-	c.AssignSpaceRole(cliConnection, args, "SpaceDeveloper", "8"),
-	c.AssignSpaceRole(cliConnection, args, "SpaceAuditor", "9"),
-	c.SwitchUser(cliConnection, args)
+// var commands = []func(){
+// 	CreateUser(cliConnection, args),
+// 	CreateOrg(cliConnection, args),
+// 	CreateSpace(cliConnection, args),
+// 	AssignOrgRole(cliConnection, args, "OrgManager", "4"),
+// 	AssignOrgRole(cliConnection, args, "BillingManager", "5"),
+// 	AssignOrgRole(cliConnection, args, "OrgAuditor", "6"),
+// 	AssignSpaceRole(cliConnection, args, "SpaceManager", "7"),
+// 	AssignSpaceRole(cliConnection, args, "SpaceDeveloper", "8"),
+// 	AssignSpaceRole(cliConnection, args, "SpaceAuditor", "9"),
+// 	SwitchUser(cliConnection, args),
+// }
+
+var commands = []func(){
+	CreateUser(),
+	CreateOrg(),
+	CreateSpace(),
+	AssignOrgRole(),
+	AssignOrgRole(),
+	AssignOrgRole(),
+	AssignSpaceRole(),
+	AssignSpaceRole(),
+	AssignSpaceRole(),
+	SwitchUser(),
 }
 
 func (c *TestUser) GetMetadata() plugin.PluginMetadata {
@@ -52,7 +65,7 @@ func (c *TestUser) Run(cliConnection plugin.CliConnection, args []string) {
 		fmt.Println(c.GetMetadata().Commands[0].UsageDetails.Usage)
 	} else {
 		for _, v := range commands {
-			if err := v(); err != nil {
+			if err := c.v(cliConnection, args); err != nil {
 				break
 			}
 		}
