@@ -19,6 +19,14 @@ var _ = Describe("TestUserCmd", func() {
 			fakeCliConnection = &fakes.FakeCliConnection{}
 			callCliCommandPlugin = &TestUser{}
 
+			fakeCliConnection.CliCommandWithoutTerminalOutputStub =
+				func(args ...string) ([]string, error) {
+					if args[0] == "create-user" {
+						return nil, errors.New("create user failed")
+					}
+					return nil, nil
+				}
+
 		})
 
 		It("returns an error if incorrect number of args supplied", func() {
