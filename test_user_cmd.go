@@ -1,9 +1,12 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"github.com/cloudfoundry/cli/plugin"
 	"github.com/mitchellh/colorstring"
+	"reflect"
+	"sort"
 )
 
 type TestUser struct{}
@@ -20,19 +23,6 @@ type TestUser struct{}
 // 	AssignSpaceRole(cliConnection, args, "SpaceAuditor", "9"),
 // 	SwitchUser(cliConnection, args),
 // }
-
-var commands = []func(){
-	CreateUser(),
-	CreateOrg(),
-	CreateSpace(),
-	AssignOrgRole(),
-	AssignOrgRole(),
-	AssignOrgRole(),
-	AssignSpaceRole(),
-	AssignSpaceRole(),
-	AssignSpaceRole(),
-	SwitchUser(),
-}
 
 func (c *TestUser) GetMetadata() plugin.PluginMetadata {
 	return plugin.PluginMetadata{
@@ -58,16 +48,41 @@ func main() {
 	plugin.Start(new(TestUser))
 }
 
+func Call(m map[int]interface{}, position int, params ...interface{}) (result []reflect.Value, err error) {
+	f := reflect.ValueOf(m[position])
+	if len(params) != f.Type().NumIn() {
+		err = errors.New("The number of params is not adapted.")
+		return
+	}
+	in := make([]reflect.Value, len(params))
+	for k, param := range params {
+		in[k] = reflect.ValueOf(param)
+	}
+	result = f.Call(in)
+	return
+}
+
 func (c *TestUser) Run(cliConnection plugin.CliConnection, args []string) {
 
 	if len(args) < 3 {
 		fmt.Println("Incorrect usage")
 		fmt.Println(c.GetMetadata().Commands[0].UsageDetails.Usage)
 	} else {
-		for _, v := range commands {
-			if err := c.v(cliConnection, args); err != nil {
-				break
-			}
+		// insert clever loop logic here
+		var keys []int
+
+		funcs := map[int]interface{}{
+			1: c.CreateUser,
+			2: c.CreateOrg,
+			3: c.CreateSpace}
+
+		for k := range funcs {
+			keys = append(keys, k)
+		}
+		sort.Ints(keys)
+
+		for _, k := range keys {
+			Call(funcs, k, cliConnection, args)
 		}
 	}
 }
