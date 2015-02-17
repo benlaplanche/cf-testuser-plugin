@@ -2,6 +2,7 @@ package main_test
 
 import (
 	"errors"
+	"fmt"
 	. "github.com/benlaplanche/cf-testuser-plugin"
 	"github.com/cloudfoundry/cli/plugin/fakes"
 	io_helpers "github.com/cloudfoundry/cli/testhelpers/io"
@@ -82,8 +83,8 @@ var _ = Describe("TestUserCmd", func() {
 				})
 
 				Expect(output[0]).To(Equal(colorstring.Color("[red][1/10]  Created user me")))
-
-				Expect(len(output)).To(Equal(1))
+				fmt.Println(len(output))
+				Expect(len(output)).To(Equal(2))
 			})
 		})
 

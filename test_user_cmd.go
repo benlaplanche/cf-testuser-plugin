@@ -59,6 +59,7 @@ func Call(m map[int]interface{}, position int, params ...interface{}) (result []
 		in[k] = reflect.ValueOf(param)
 	}
 	result = f.Call(in)
+	// fmt.Println(result)
 	return
 }
 
@@ -85,10 +86,10 @@ func (c *TestUser) Run(cliConnection plugin.CliConnection, args []string) {
 		sort.Ints(keys)
 
 		for _, k := range keys {
-			val, err := Call(funcs, k, cliConnection, args)
-			fmt.Println(val)
+			val, _ := Call(funcs, k, cliConnection, args)
+			// fmt.Println(val[0].Bool())
 			// fmt.Println(err)
-			if err != nil {
+			if val[0].Bool() == false {
 				break
 			}
 		}
@@ -99,18 +100,18 @@ func (c *TestUser) Orgs(cliConnection plugin.CliConnection, args []string) (succ
 
 	for i, v := range OrgRoles {
 		_, err := cliConnection.CliCommandWithoutTerminalOutput("set-org-role", args[1], "development", v)
+		index := strconv.Itoa(i + 4)
 
 		if err != nil {
+			fmt.Println(colorstring.Color("[red][" + index + "/10]  Assigned " + v + " to me in Org development"))
 			break
 			return false
 		} else {
-			index := strconv.Itoa(i + 4)
 			fmt.Println(colorstring.Color("[green][" + index + "/10]  Assigned " + v + " to me in Org development"))
+			return true
 		}
 	}
-
 	return true
-
 }
 
 func (c *TestUser) Spaces(cliConnection plugin.CliConnection, args []string) (success bool) {
@@ -124,11 +125,10 @@ func (c *TestUser) Spaces(cliConnection plugin.CliConnection, args []string) (su
 		} else {
 			index := strconv.Itoa(i + 7)
 			fmt.Println(colorstring.Color("[green][" + index + "/10]  Assigned " + v + " to me in Space development"))
+			return true
 		}
 	}
-
 	return true
-
 }
 
 func (c *TestUser) CreateUser(cliConnection plugin.CliConnection, args []string) (success bool) {
