@@ -1,4 +1,3 @@
-# Look at stubbing the cliCommandReturn to test failures, not just happy path
 # Refactor the Org & Space roles
 # Move text color coding outside of the functions into main
 # Add additional args to override hard coded org & space name
