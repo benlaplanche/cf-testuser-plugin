@@ -59,7 +59,6 @@ func Call(m map[int]interface{}, position int, params ...interface{}) (result []
 		in[k] = reflect.ValueOf(param)
 	}
 	result = f.Call(in)
-	// fmt.Println(result)
 	return
 }
 
@@ -69,7 +68,7 @@ func (c *TestUser) Run(cliConnection plugin.CliConnection, args []string) {
 		fmt.Println("Incorrect usage")
 		fmt.Println(c.GetMetadata().Commands[0].UsageDetails.Usage)
 	} else {
-		// insert clever loop logic here
+
 		var keys []int
 
 		funcs := map[int]interface{}{
@@ -87,13 +86,12 @@ func (c *TestUser) Run(cliConnection plugin.CliConnection, args []string) {
 
 		for _, k := range keys {
 			val, _ := Call(funcs, k, cliConnection, args)
-			// fmt.Println(val[0].Bool())
-			// fmt.Println(err)
 			if val[0].Bool() == false {
 				fmt.Printf("break caused on key: %s", k)
 				break
 			}
 		}
+
 	}
 }
 
@@ -139,15 +137,12 @@ func (c *TestUser) CreateUser(cliConnection plugin.CliConnection, args []string)
 
 	if err != nil {
 		fmt.Println(colorstring.Color("[red][1/10]  Created user " + args[1]))
-		// fmt.Println(err)
-		// os.Exit(1)
-		return false
+		success = false
 	} else {
 		fmt.Println(colorstring.Color("[green][1/10]  Created user " + args[1]))
-		// fmt.Println(output)
-		return true
+		success = true
 	}
-
+	return
 }
 
 func (c *TestUser) CreateOrg(cliConnection plugin.CliConnection, args []string) (success bool) {
@@ -156,13 +151,13 @@ func (c *TestUser) CreateOrg(cliConnection plugin.CliConnection, args []string) 
 
 	if err != nil {
 		fmt.Println(colorstring.Color("[red][2/10]  Created Organisation development"))
-		// fmt.Println(err)
-		return false
+
+		success = false
 	} else {
 		fmt.Println(colorstring.Color("[green][2/10]  Created Organisation development"))
-		// fmt.Println(output)
-		return true
+		success = true
 	}
+	return
 }
 
 func (c *TestUser) CreateSpace(cliConnection plugin.CliConnection, args []string) (success bool) {
