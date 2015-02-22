@@ -171,13 +171,12 @@ func (c *TestUser) CreateSpace(cliConnection plugin.CliConnection, args []string
 
 	if err != nil {
 		fmt.Println(colorstring.Color("[red][3/10]  Created Space development"))
-		// fmt.Println(err)
-		return false
+		success = false
 	} else {
 		fmt.Println(colorstring.Color("[green][3/10]  Created Space development"))
-		// fmt.Println(output)
-		return true
+		success = true
 	}
+	return
 }
 
 func (c *TestUser) SwitchUser(cliConnection plugin.CliConnection, args []string) {
