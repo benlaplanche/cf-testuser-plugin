@@ -178,32 +178,6 @@ func (c *TestUser) CreateSpace(cliConnection plugin.CliConnection, args []string
 	}
 }
 
-func (c *TestUser) AssignOrgRole(cliConnection plugin.CliConnection, args []string, role string, i string) {
-
-	_, err := cliConnection.CliCommand("set-org-role", args[1], "development", role)
-
-	if err != nil {
-		fmt.Println(colorstring.Color("[red][" + i + "/10]  Assigned " + role + " to me in Org development"))
-		// fmt.Println(err)
-	} else {
-		fmt.Println(colorstring.Color("[green][" + i + "/10]  Assigned " + role + " to me in Org development"))
-		// fmt.Println(output)
-	}
-}
-
-func (c *TestUser) AssignSpaceRole(cliConnection plugin.CliConnection, args []string, role string, i string) {
-
-	_, err := cliConnection.CliCommand("set-space-role", args[1], "development", "development", role)
-
-	if err != nil {
-		fmt.Println(colorstring.Color("[red][" + i + "/10]  Assigned " + role + " to me in Space development"))
-		// fmt.Println(err)
-	} else {
-		fmt.Println(colorstring.Color("[green][" + i + "/10]  Assigned " + role + " to me in Space development"))
-		// fmt.Println(output)
-	}
-}
-
 func (c *TestUser) SwitchUser(cliConnection plugin.CliConnection, args []string) {
 
 	fmt.Println(colorstring.Color("[green][10/10]  Logged out and logged in as " + args[1]))
