@@ -2,7 +2,6 @@ package main_test
 
 import (
 	"errors"
-	"fmt"
 	. "github.com/benlaplanche/cf-testuser-plugin"
 	"github.com/cloudfoundry/cli/plugin/fakes"
 	io_helpers "github.com/cloudfoundry/cli/testhelpers/io"
@@ -40,7 +39,7 @@ var _ = Describe("TestUserCmd", func() {
 				output := io_helpers.CaptureOutput(func() {
 					callCliCommandPlugin.Run(fakeCliConnection, []string{"test-user", "me", "password"})
 				})
-				fmt.Println(output)
+
 				Expect(output[0]).To(Equal(colorstring.Color("[green][1/10]  Created user me")))
 
 				Expect(output[1]).To(Equal(colorstring.Color("[green][2/10]  Created Organisation development")))
@@ -83,8 +82,54 @@ var _ = Describe("TestUserCmd", func() {
 				})
 
 				Expect(output[0]).To(Equal(colorstring.Color("[red][1/10]  Created user me")))
-				fmt.Println(len(output))
+
 				Expect(len(output)).To(Equal(2))
+			})
+		})
+
+		Describe("Cannot create an org", func() {
+
+			BeforeEach(func() {
+				fakeCliConnection.CliCommandWithoutTerminalOutputStub =
+					func(args ...string) ([]string, error) {
+						if args[0] == "create-org" {
+							return nil, errors.New("create org failed")
+						}
+						return nil, nil
+					}
+			})
+
+			It("returns an error", func() {
+				output := io_helpers.CaptureOutput(func() {
+					callCliCommandPlugin.Run(fakeCliConnection, []string{"test-user", "me", "password"})
+				})
+
+				Expect(output[1]).To(Equal(colorstring.Color("[red][2/10]  Created Organisation development")))
+
+				Expect(len(output)).To(Equal(3))
+			})
+		})
+
+		Describe("Cannot create a space", func() {
+
+			BeforeEach(func() {
+				fakeCliConnection.CliCommandWithoutTerminalOutputStub =
+					func(args ...string) ([]string, error) {
+						if args[0] == "create-space" {
+							return nil, errors.New("create space failed")
+						}
+						return nil, nil
+					}
+			})
+
+			It("returns an error", func() {
+				output := io_helpers.CaptureOutput(func() {
+					callCliCommandPlugin.Run(fakeCliConnection, []string{"test-user", "me", "password"})
+				})
+
+				Expect(output[2]).To(Equal(colorstring.Color("[red][3/10]  Created Space development")))
+
+				Expect(len(output)).To(Equal(4))
 			})
 		})
 
