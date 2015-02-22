@@ -77,62 +77,26 @@ func (c *TestUser) RunCommands(cliConnection plugin.CliConnection, args []string
 
 	var keys []int
 
-	funcs := map[int]interface{}{
+	commands := map[int]interface{}{
 		1: c.CreateUser,
 		2: c.CreateOrg,
 		3: c.CreateSpace,
 		4: c.OrgRoles,
 		5: c.SpaceRoles}
 
-	for k := range funcs {
+	for k := range commands {
 		keys = append(keys, k)
 	}
 
 	sort.Ints(keys)
 
 	for _, k := range keys {
-		val, _ := Call(funcs, k, cliConnection, args)
+		val, _ := Call(commands, k, cliConnection, args)
 		if val[0].Bool() == false {
 			break
 		}
 	}
 
-}
-
-func (c *TestUser) OrgRoles(cliConnection plugin.CliConnection, args []string) (success bool) {
-
-	for i, v := range OrgRoles {
-		_, err := cliConnection.CliCommandWithoutTerminalOutput("set-org-role", args[1], "development", v)
-		index := strconv.Itoa(i + 4)
-
-		if err != nil {
-			fmt.Println(colorstring.Color("[red][" + index + "/10]  Assigned " + v + " to me in Org development"))
-			break
-			success = false
-		} else {
-			fmt.Println(colorstring.Color("[green][" + index + "/10]  Assigned " + v + " to me in Org development"))
-			success = true
-		}
-	}
-	return
-}
-
-func (c *TestUser) SpaceRoles(cliConnection plugin.CliConnection, args []string) (success bool) {
-
-	for i, v := range SpaceRoles {
-		_, err := cliConnection.CliCommand("set-space-role", args[1], "development", "development", v)
-		index := strconv.Itoa(i + 7)
-		if err != nil {
-			fmt.Println(colorstring.Color("[red][" + index + "/10]  Assigned " + v + " to me in Space development"))
-			break
-			success = false
-		} else {
-
-			fmt.Println(colorstring.Color("[green][" + index + "/10]  Assigned " + v + " to me in Space development"))
-			success = true
-		}
-	}
-	return
 }
 
 func (c *TestUser) CreateUser(cliConnection plugin.CliConnection, args []string) (success bool) {
@@ -186,7 +150,38 @@ func (c *TestUser) CreateSpace(cliConnection plugin.CliConnection, args []string
 	return
 }
 
-func (c *TestUser) SwitchUser(cliConnection plugin.CliConnection, args []string) {
+func (c *TestUser) OrgRoles(cliConnection plugin.CliConnection, args []string) (success bool) {
 
-	fmt.Println(colorstring.Color("[green][10/10]  Logged out and logged in as " + args[1]))
+	for i, v := range OrgRoles {
+		_, err := cliConnection.CliCommandWithoutTerminalOutput("set-org-role", args[1], "development", v)
+		index := strconv.Itoa(i + 4)
+
+		if err != nil {
+			fmt.Println(colorstring.Color("[red][" + index + "/10]  Assigned " + v + " to me in Org development"))
+			break
+			success = false
+		} else {
+			fmt.Println(colorstring.Color("[green][" + index + "/10]  Assigned " + v + " to me in Org development"))
+			success = true
+		}
+	}
+	return
+}
+
+func (c *TestUser) SpaceRoles(cliConnection plugin.CliConnection, args []string) (success bool) {
+
+	for i, v := range SpaceRoles {
+		_, err := cliConnection.CliCommand("set-space-role", args[1], "development", "development", v)
+		index := strconv.Itoa(i + 7)
+		if err != nil {
+			fmt.Println(colorstring.Color("[red][" + index + "/10]  Assigned " + v + " to me in Space development"))
+			break
+			success = false
+		} else {
+
+			fmt.Println(colorstring.Color("[green][" + index + "/10]  Assigned " + v + " to me in Space development"))
+			success = true
+		}
+	}
+	return
 }
