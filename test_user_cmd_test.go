@@ -155,5 +155,27 @@ var _ = Describe("TestUserCmd", func() {
 			})
 		})
 
+		Describe("Space already exists", func() {
+
+			BeforeEach(func() {
+				fakeCliConnection.CliCommandWithoutTerminalOutputStub =
+					func(args ...string) (output []string, err error) {
+						if args[0] == "create-spcae" {
+							output = append(output, "Space development already exists")
+							return
+						}
+						return
+					}
+			})
+
+			It("returns an error", func() {
+				output := io_helpers.CaptureOutput(func() {
+					callCliCommandPlugin.Run(fakeCliConnection, []string{"test-user", "me", "password"})
+				})
+				Expect(output[1]).To(Equal(colorstring.Color("[cyan][3/10]  Created Space development")))
+
+			})
+		})
+
 	})
 })
