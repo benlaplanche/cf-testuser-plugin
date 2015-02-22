@@ -167,9 +167,13 @@ func (c *TestUser) CreateOrg(cliConnection plugin.CliConnection, args []string) 
 
 func (c *TestUser) CreateSpace(cliConnection plugin.CliConnection, args []string) (success bool) {
 
-	_, err := cliConnection.CliCommandWithoutTerminalOutput("create-space", "development", "-o", "development")
+	output, err := cliConnection.CliCommandWithoutTerminalOutput("create-space", "development", "-o", "development")
 
-	if err != nil {
+	if output != nil && strings.Contains(output[0], "already exists") {
+		fmt.Println(colorstring.Color("[cyan][3/10]  Created Space development"))
+
+		success = true
+	} else if err != nil {
 		fmt.Println(colorstring.Color("[red][3/10]  Created Space development"))
 		success = false
 	} else {

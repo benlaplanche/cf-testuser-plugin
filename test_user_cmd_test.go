@@ -160,7 +160,7 @@ var _ = Describe("TestUserCmd", func() {
 			BeforeEach(func() {
 				fakeCliConnection.CliCommandWithoutTerminalOutputStub =
 					func(args ...string) (output []string, err error) {
-						if args[0] == "create-spcae" {
+						if args[0] == "create-space" {
 							output = append(output, "Space development already exists")
 							return
 						}
@@ -172,7 +172,7 @@ var _ = Describe("TestUserCmd", func() {
 				output := io_helpers.CaptureOutput(func() {
 					callCliCommandPlugin.Run(fakeCliConnection, []string{"test-user", "me", "password"})
 				})
-				Expect(output[1]).To(Equal(colorstring.Color("[cyan][3/10]  Created Space development")))
+				Expect(output[2]).To(Equal(colorstring.Color("[cyan][3/10]  Created Space development")))
 
 			})
 		})
