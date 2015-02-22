@@ -69,34 +69,37 @@ func (c *TestUser) Run(cliConnection plugin.CliConnection, args []string) {
 		fmt.Println("Incorrect usage")
 		fmt.Println(c.GetMetadata().Commands[0].UsageDetails.Usage)
 	} else {
-
-		var keys []int
-
-		funcs := map[int]interface{}{
-			1: c.CreateUser,
-			2: c.CreateOrg,
-			3: c.CreateSpace,
-			4: c.Orgs,
-			5: c.Spaces}
-
-		for k := range funcs {
-			keys = append(keys, k)
-		}
-
-		sort.Ints(keys)
-
-		for _, k := range keys {
-			val, _ := Call(funcs, k, cliConnection, args)
-			if val[0].Bool() == false {
-				fmt.Printf("break caused on key: %s", k)
-				break
-			}
-		}
-
+		c.RunCommands(cliConnection, args)
 	}
 }
 
-func (c *TestUser) Orgs(cliConnection plugin.CliConnection, args []string) (success bool) {
+func (c *TestUser) RunCommands(cliConnection plugin.CliConnection, args []string) {
+
+	var keys []int
+
+	funcs := map[int]interface{}{
+		1: c.CreateUser,
+		2: c.CreateOrg,
+		3: c.CreateSpace,
+		4: c.OrgRoles,
+		5: c.SpaceRoles}
+
+	for k := range funcs {
+		keys = append(keys, k)
+	}
+
+	sort.Ints(keys)
+
+	for _, k := range keys {
+		val, _ := Call(funcs, k, cliConnection, args)
+		if val[0].Bool() == false {
+			break
+		}
+	}
+
+}
+
+func (c *TestUser) OrgRoles(cliConnection plugin.CliConnection, args []string) (success bool) {
 
 	for i, v := range OrgRoles {
 		_, err := cliConnection.CliCommandWithoutTerminalOutput("set-org-role", args[1], "development", v)
@@ -114,7 +117,7 @@ func (c *TestUser) Orgs(cliConnection plugin.CliConnection, args []string) (succ
 	return
 }
 
-func (c *TestUser) Spaces(cliConnection plugin.CliConnection, args []string) (success bool) {
+func (c *TestUser) SpaceRoles(cliConnection plugin.CliConnection, args []string) (success bool) {
 
 	for i, v := range SpaceRoles {
 		_, err := cliConnection.CliCommand("set-space-role", args[1], "development", "development", v)
