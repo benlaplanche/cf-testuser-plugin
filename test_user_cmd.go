@@ -90,6 +90,7 @@ func (c *TestUser) Run(cliConnection plugin.CliConnection, args []string) {
 			// fmt.Println(val[0].Bool())
 			// fmt.Println(err)
 			if val[0].Bool() == false {
+				fmt.Printf("break caused on key: %s", k)
 				break
 			}
 		}
@@ -105,30 +106,31 @@ func (c *TestUser) Orgs(cliConnection plugin.CliConnection, args []string) (succ
 		if err != nil {
 			fmt.Println(colorstring.Color("[red][" + index + "/10]  Assigned " + v + " to me in Org development"))
 			break
-			return false
+			success = false
 		} else {
 			fmt.Println(colorstring.Color("[green][" + index + "/10]  Assigned " + v + " to me in Org development"))
-			return true
+			success = true
 		}
 	}
-	return true
+	return
 }
 
 func (c *TestUser) Spaces(cliConnection plugin.CliConnection, args []string) (success bool) {
 
 	for i, v := range SpaceRoles {
 		_, err := cliConnection.CliCommand("set-space-role", args[1], "development", "development", v)
-
+		index := strconv.Itoa(i + 7)
 		if err != nil {
+			fmt.Println(colorstring.Color("[red][" + index + "/10]  Assigned " + v + " to me in Space development"))
 			break
-			return false
+			success = false
 		} else {
-			index := strconv.Itoa(i + 7)
+
 			fmt.Println(colorstring.Color("[green][" + index + "/10]  Assigned " + v + " to me in Space development"))
-			return true
+			success = true
 		}
 	}
-	return true
+	return
 }
 
 func (c *TestUser) CreateUser(cliConnection plugin.CliConnection, args []string) (success bool) {
