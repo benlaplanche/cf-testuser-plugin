@@ -8,6 +8,7 @@ import (
 	"reflect"
 	"sort"
 	"strconv"
+	"strings"
 )
 
 type TestUser struct{}
@@ -147,9 +148,13 @@ func (c *TestUser) CreateUser(cliConnection plugin.CliConnection, args []string)
 
 func (c *TestUser) CreateOrg(cliConnection plugin.CliConnection, args []string) (success bool) {
 
-	_, err := cliConnection.CliCommandWithoutTerminalOutput("create-org", "development")
+	output, err := cliConnection.CliCommandWithoutTerminalOutput("create-org", "development")
 
-	if err != nil {
+	if output != nil && strings.Contains(output[0], "already exists") {
+		fmt.Println(colorstring.Color("[cyan][2/10]  Created Organisation development"))
+
+		success = true
+	} else if err != nil {
 		fmt.Println(colorstring.Color("[red][2/10]  Created Organisation development"))
 
 		success = false

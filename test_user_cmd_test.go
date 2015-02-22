@@ -114,7 +114,7 @@ var _ = Describe("TestUserCmd", func() {
 
 			BeforeEach(func() {
 				fakeCliConnection.CliCommandWithoutTerminalOutputStub =
-					func(args ...string) ([]string, error) {
+					func(args ...string) (output []string, err error) {
 						if args[0] == "create-space" {
 							return nil, errors.New("create space failed")
 						}
@@ -130,6 +130,28 @@ var _ = Describe("TestUserCmd", func() {
 				Expect(output[2]).To(Equal(colorstring.Color("[red][3/10]  Created Space development")))
 
 				Expect(len(output)).To(Equal(4))
+			})
+		})
+
+		Describe("Org already exists", func() {
+
+			BeforeEach(func() {
+				fakeCliConnection.CliCommandWithoutTerminalOutputStub =
+					func(args ...string) (output []string, err error) {
+						if args[0] == "create-org" {
+							output = append(output, "Org development already exists")
+							return
+						}
+						return
+					}
+			})
+
+			It("returns an error", func() {
+				output := io_helpers.CaptureOutput(func() {
+					callCliCommandPlugin.Run(fakeCliConnection, []string{"test-user", "me", "password"})
+				})
+				Expect(output[1]).To(Equal(colorstring.Color("[cyan][2/10]  Created Organisation development")))
+
 			})
 		})
 
