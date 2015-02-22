@@ -69,7 +69,7 @@ func (c *TestUser) Run(cliConnection plugin.CliConnection, args []string) {
 		fmt.Println("Incorrect usage")
 		fmt.Println(c.GetMetadata().Commands[0].UsageDetails.Usage)
 	} else {
-		c.RunCommands(cliConnection, args)
+		c.RunCommands2(cliConnection, args)
 	}
 }
 
@@ -99,6 +99,74 @@ func (c *TestUser) RunCommands(cliConnection plugin.CliConnection, args []string
 
 }
 
+func (c *TestUser) RunCommands2(cliConnection plugin.CliConnection, args []string) {
+
+	var keys []int
+
+	commands := map[int]interface{}{
+		1: c.CreateUser2,
+		2: c.CreateOrg2,
+		3: c.CreateSpace2,
+		4: c.OrgRoles2,
+		5: c.SpaceRoles2}
+
+	for k := range commands {
+		keys = append(keys, k)
+	}
+
+	sort.Ints(keys)
+
+	// var messages []string
+	// var flags []int64
+
+	for _, k := range keys {
+		output, _ := Call(commands, k, cliConnection, args)
+		fmt.Println(output[0])
+		fmt.Println(output[1])
+		fmt.Println(len(output))
+		// fmt.Println(success)
+		// messages = append(messages, ReflectToString(output[0]))
+		// flags = append(flags, ReflectToInt(output[1]))
+		// messages = append(messages, output...)
+		// flags = append(flags, output...)
+		// fmt.Println(success.search(1))
+		// if success.Search(1) ==  {
+		// 	break
+		// }
+
+	}
+
+}
+
+func ReflectToString(values []reflect.Value) (output []string) {
+	for _, v := range values {
+		output = append(output, v.String())
+	}
+	return
+}
+
+func ReflectToInt(values []reflect.Value) (output []int64) {
+	for _, v := range values {
+		output = append(output, v.Int())
+	}
+	return
+}
+
+func (c *TestUser) CreateUser2(cliConnection plugin.CliConnection, args []string) (output []string, success []int) {
+
+	output = append(output, "Created user "+args[1])
+
+	_, err := cliConnection.CliCommandWithoutTerminalOutput("create-user", args[1], args[2])
+
+	if err != nil {
+		success = append(success, 0)
+	} else {
+		success = append(success, 1)
+	}
+
+	return
+}
+
 func (c *TestUser) CreateUser(cliConnection plugin.CliConnection, args []string) (success bool) {
 
 	_, err := cliConnection.CliCommandWithoutTerminalOutput("create-user", args[1], args[2])
@@ -110,6 +178,23 @@ func (c *TestUser) CreateUser(cliConnection plugin.CliConnection, args []string)
 		fmt.Println(colorstring.Color("[green][1/10]  Created user " + args[1]))
 		success = true
 	}
+	return
+}
+
+func (c *TestUser) CreateOrg2(cliConnection plugin.CliConnection, args []string) (output []string, success []int) {
+
+	output = append(output, "Created Organisation development")
+
+	output, err := cliConnection.CliCommandWithoutTerminalOutput("create-org", "development")
+
+	if output != nil && strings.Contains(output[0], "already exists") {
+		success = append(success, 2)
+	} else if err != nil {
+		success = append(success, 0)
+	} else {
+		success = append(success, 1)
+	}
+
 	return
 }
 
@@ -132,6 +217,23 @@ func (c *TestUser) CreateOrg(cliConnection plugin.CliConnection, args []string) 
 	return
 }
 
+func (c *TestUser) CreateSpace2(cliConnection plugin.CliConnection, args []string) (output []string, success []int) {
+
+	output = append(output, "Created Space development")
+
+	output, err := cliConnection.CliCommandWithoutTerminalOutput("create-space", "development", "-o", "development")
+
+	if output != nil && strings.Contains(output[0], "already exists") {
+		success = append(success, 2)
+	} else if err != nil {
+		success = append(success, 0)
+	} else {
+		success = append(success, 1)
+	}
+
+	return
+}
+
 func (c *TestUser) CreateSpace(cliConnection plugin.CliConnection, args []string) (success bool) {
 
 	output, err := cliConnection.CliCommandWithoutTerminalOutput("create-space", "development", "-o", "development")
@@ -150,6 +252,23 @@ func (c *TestUser) CreateSpace(cliConnection plugin.CliConnection, args []string
 	return
 }
 
+func (c *TestUser) OrgRoles2(cliConnection plugin.CliConnection, args []string) (output []string, success []int) {
+
+	for _, v := range OrgRoles {
+		output = append(output, "Assigned "+v+" to me in Org development")
+
+		_, err := cliConnection.CliCommandWithoutTerminalOutput("set-org-role", args[1], "development", v)
+
+		if err != nil {
+			break
+			success = append(success, 0)
+		} else {
+			success = append(success, 1)
+		}
+	}
+	return
+}
+
 func (c *TestUser) OrgRoles(cliConnection plugin.CliConnection, args []string) (success bool) {
 
 	for i, v := range OrgRoles {
@@ -163,6 +282,23 @@ func (c *TestUser) OrgRoles(cliConnection plugin.CliConnection, args []string) (
 		} else {
 			fmt.Println(colorstring.Color("[green][" + index + "/10]  Assigned " + v + " to me in Org development"))
 			success = true
+		}
+	}
+	return
+}
+
+func (c *TestUser) SpaceRoles2(cliConnection plugin.CliConnection, args []string) (output []string, success []int) {
+
+	for _, v := range SpaceRoles {
+		output = append(output, "Assigned "+v+" to me in Space development")
+
+		_, err := cliConnection.CliCommand("set-space-role", args[1], "development", "development", v)
+
+		if err != nil {
+			break
+			success = append(success, 0)
+		} else {
+			success = append(success, 1)
 		}
 	}
 	return
