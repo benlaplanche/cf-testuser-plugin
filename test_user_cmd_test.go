@@ -40,7 +40,7 @@ var _ = Describe("TestUserCmd", func() {
 				output := io_helpers.CaptureOutput(func() {
 					callCliCommandPlugin.Run(fakeCliConnection, []string{"test-user", "me", "password"})
 				})
-
+				fmt.Println(output)
 				Expect(output[0]).To(Equal(colorstring.Color("[green][1/10]  Created user me")))
 
 				Expect(output[1]).To(Equal(colorstring.Color("[green][2/10]  Created Organisation development")))
