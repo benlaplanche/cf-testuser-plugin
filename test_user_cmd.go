@@ -103,12 +103,15 @@ func (c *TestUser) RunCommands2(cliConnection plugin.CliConnection, args []strin
 
 	var keys []int
 
+	// commands := map[int]interface{}{
+	// 	1: c.CreateUser2,
+	// 	2: c.CreateOrg2,
+	// 	3: c.CreateSpace2,
+	// 	4: c.OrgRoles2,
+	// 	5: c.SpaceRoles2}
+
 	commands := map[int]interface{}{
-		1: c.CreateUser2,
-		2: c.CreateOrg2,
-		3: c.CreateSpace2,
-		4: c.OrgRoles2,
-		5: c.SpaceRoles2}
+		1: c.CreateUser2}
 
 	for k := range commands {
 		keys = append(keys, k)
@@ -116,23 +119,21 @@ func (c *TestUser) RunCommands2(cliConnection plugin.CliConnection, args []strin
 
 	sort.Ints(keys)
 
-	// var messages []string
-	// var flags []int64
-
 	for _, k := range keys {
 		output, _ := Call(commands, k, cliConnection, args)
-		fmt.Println(output[0])
-		fmt.Println(output[1])
-		fmt.Println(len(output))
-		// fmt.Println(success)
-		// messages = append(messages, ReflectToString(output[0]))
-		// flags = append(flags, ReflectToInt(output[1]))
-		// messages = append(messages, output...)
-		// flags = append(flags, output...)
-		// fmt.Println(success.search(1))
-		// if success.Search(1) ==  {
-		// 	break
-		// }
+
+		for _, x := range output {
+
+			// switch x.Type() {
+			// case x.String():
+			// 	fmt.Print(x)
+			// case x.Int():
+			// 	fmt.Print(x.Int())
+			// }
+
+			fmt.Print(x.Index(0))
+
+		}
 
 	}
 
@@ -155,6 +156,7 @@ func ReflectToInt(values []reflect.Value) (output []int64) {
 func (c *TestUser) CreateUser2(cliConnection plugin.CliConnection, args []string) (output []string, success []int) {
 
 	output = append(output, "Created user "+args[1])
+	// output = "Created user " + args[1]
 
 	_, err := cliConnection.CliCommandWithoutTerminalOutput("create-user", args[1], args[2])
 
