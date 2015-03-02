@@ -25,6 +25,9 @@ var SpaceRoles = []string{
 	"SpaceAuditor",
 }
 
+var OutputMessages = []string{}
+var CmdTotalCount = 10
+
 func (c *TestUser) GetMetadata() plugin.PluginMetadata {
 	return plugin.PluginMetadata{
 		Name: "TestUser",
@@ -101,42 +104,38 @@ func (c *TestUser) RunCommands(cliConnection plugin.CliConnection, args []string
 
 func (c *TestUser) RunCommands2(cliConnection plugin.CliConnection, args []string) {
 
-	var keys []int
+	// Create a user
+	output, success := c.CreateUser2(cliConnection, args)
 
-	// commands := map[int]interface{}{
-	// 	1: c.CreateUser2,
-	// 	2: c.CreateOrg2,
-	// 	3: c.CreateSpace2,
-	// 	4: c.OrgRoles2,
-	// 	5: c.SpaceRoles2}
+	AddMessages(output, success)
 
-	commands := map[int]interface{}{
-		1: c.CreateUser2}
-
-	for k := range commands {
-		keys = append(keys, k)
+	for _, v := range OutputMessages {
+		fmt.Println(colorstring.Color(v))
 	}
 
-	sort.Ints(keys)
+}
 
-	for _, k := range keys {
-		output, _ := Call(commands, k, cliConnection, args)
-
-		for _, x := range output {
-
-			// switch x.Type() {
-			// case x.String():
-			// 	fmt.Print(x)
-			// case x.Int():
-			// 	fmt.Print(x.Int())
-			// }
-
-			fmt.Print(x.Index(0))
-
+func AddMessages(output []string, success []int) {
+	for i, v := range output {
+		switch success[i] {
+		case 0:
+			OutputMessages = append(OutputMessages, "[red][1/10] "+v)
+		case 1:
+			OutputMessages = append(OutputMessages, "[green][1/10] "+v)
+		case 2:
+			OutputMessages = append(OutputMessages, "[cyan][1/10]"+v)
 		}
+	}
+}
 
+func SearchIntSlice(slice []int, seek int) (answer bool) {
+	for _, v := range slice {
+		if v == seek {
+			return true
+		}
 	}
 
+	return false
 }
 
 func ReflectToString(values []reflect.Value) (output []string) {
