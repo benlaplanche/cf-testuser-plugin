@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/cloudfoundry/cli/plugin"
 	"github.com/mitchellh/colorstring"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -31,6 +32,22 @@ func CommandCounter() (count string) {
 	total := strconv.FormatInt(CmdTotalCount, 10)
 
 	return "[" + current + "/" + total + "] "
+}
+
+func SearchIntSlice(slice []int, seek int) (result bool) {
+	for _, v := range slice {
+		if v == seek {
+			return true
+			break
+		}
+	}
+	return false
+}
+
+func ExitIf(success []int) {
+	if SearchIntSlice(success, 0) == true {
+		os.Exit(1)
+	}
 }
 
 func (c *TestUser) GetMetadata() plugin.PluginMetadata {
@@ -74,18 +91,23 @@ func (c *TestUser) RunCommands(cliConnection plugin.CliConnection, args []string
 
 	output, success := c.CreateUser(cliConnection, args)
 	PrintMessages(output, success)
+	ExitIf(success)
 
 	output, success = c.CreateOrg(cliConnection, args)
 	PrintMessages(output, success)
+	ExitIf(success)
 
 	output, success = c.CreateSpace(cliConnection, args)
 	PrintMessages(output, success)
+	ExitIf(success)
 
 	output, success = c.OrgRoles(cliConnection, args)
 	PrintMessages(output, success)
+	ExitIf(success)
 
 	output, success = c.SpaceRoles(cliConnection, args)
 	PrintMessages(output, success)
+	ExitIf(success)
 
 }
 
@@ -125,7 +147,7 @@ func (c *TestUser) CreateOrg(cliConnection plugin.CliConnection, args []string) 
 
 	x, err := cliConnection.CliCommandWithoutTerminalOutput("create-org", "development")
 
-	if x != nil && strings.Contains(output[0], "already exists") {
+	if x != nil && strings.Contains(x[0], "already exists") {
 		success = append(success, 2)
 	} else if err != nil {
 		success = append(success, 0)
@@ -142,7 +164,7 @@ func (c *TestUser) CreateSpace(cliConnection plugin.CliConnection, args []string
 
 	x, err := cliConnection.CliCommandWithoutTerminalOutput("create-space", "development", "-o", "development")
 
-	if x != nil && strings.Contains(output[0], "already exists") {
+	if x != nil && strings.Contains(x[0], "already exists") {
 		success = append(success, 2)
 	} else if err != nil {
 		success = append(success, 0)
