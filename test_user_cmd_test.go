@@ -36,7 +36,7 @@ var _ = Describe("TestUserCmd", func() {
 
 		Describe("Testing the happy path", func() {
 
-			FIt("creates a new user", func() {
+			It("creates a new user", func() {
 				output := io_helpers.CaptureOutput(func() {
 					callCliCommandPlugin.Run(fakeCliConnection, []string{"test-user", "me", "password"})
 				})
@@ -82,7 +82,7 @@ var _ = Describe("TestUserCmd", func() {
 					callCliCommandPlugin.Run(fakeCliConnection, []string{"test-user", "me", "password"})
 				})
 
-				Expect(output[0]).To(Equal(colorstring.Color("[red][1/10]  Created user me")))
+				Expect(output[0]).To(Equal(colorstring.Color("[red][1/10] Created user me")))
 
 				Expect(len(output)).To(Equal(2))
 			})
@@ -105,7 +105,7 @@ var _ = Describe("TestUserCmd", func() {
 					callCliCommandPlugin.Run(fakeCliConnection, []string{"test-user", "me", "password"})
 				})
 
-				Expect(output[1]).To(Equal(colorstring.Color("[red][2/10]  Created Organisation development")))
+				Expect(output[1]).To(Equal(colorstring.Color("[red][2/10] Created Organisation development")))
 
 				Expect(len(output)).To(Equal(3))
 			})
@@ -128,7 +128,7 @@ var _ = Describe("TestUserCmd", func() {
 					callCliCommandPlugin.Run(fakeCliConnection, []string{"test-user", "me", "password"})
 				})
 
-				Expect(output[2]).To(Equal(colorstring.Color("[red][3/10]  Created Space development")))
+				Expect(output[2]).To(Equal(colorstring.Color("[red][3/10] Created Space development")))
 
 				Expect(len(output)).To(Equal(4))
 			})
@@ -151,7 +151,7 @@ var _ = Describe("TestUserCmd", func() {
 				output := io_helpers.CaptureOutput(func() {
 					callCliCommandPlugin.Run(fakeCliConnection, []string{"test-user", "me", "password"})
 				})
-				Expect(output[1]).To(Equal(colorstring.Color("[cyan][2/10]  Created Organisation development")))
+				Expect(output[1]).To(Equal(colorstring.Color("[cyan][2/10] Created Organisation development")))
 
 			})
 		})
@@ -169,11 +169,11 @@ var _ = Describe("TestUserCmd", func() {
 					}
 			})
 
-			It("returns an error", func() {
+			FIt("returns an error", func() {
 				output := io_helpers.CaptureOutput(func() {
 					callCliCommandPlugin.Run(fakeCliConnection, []string{"test-user", "me", "password"})
 				})
-				Expect(output[2]).To(Equal(colorstring.Color("[cyan][3/10]  Created Space development")))
+				Expect(output[2]).To(Equal(colorstring.Color("[cyan][3/10] Created Space development")))
 
 			})
 		})

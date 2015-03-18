@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/cloudfoundry/cli/plugin"
 	"github.com/mitchellh/colorstring"
+	"strconv"
 	"strings"
 )
 
@@ -21,8 +22,16 @@ var SpaceRoles = []string{
 	"SpaceAuditor",
 }
 
-var OutputMessages = []string{}
-var CmdTotalCount = 10
+const CmdTotalCount = 10
+
+var CmdRunCount int
+
+func CommandCounter() (count string) {
+	current := strconv.Itoa(CmdRunCount)
+	total := strconv.FormatInt(CmdTotalCount, 10)
+
+	return "[" + current + "/" + total + "] "
+}
 
 func (c *TestUser) GetMetadata() plugin.PluginMetadata {
 	return plugin.PluginMetadata{
@@ -54,6 +63,9 @@ func (c *TestUser) Run(cliConnection plugin.CliConnection, args []string) {
 		fmt.Println("Incorrect usage")
 		fmt.Println(c.GetMetadata().Commands[0].UsageDetails.Usage)
 	} else {
+
+		CmdRunCount = 1
+
 		c.RunCommands(cliConnection, args)
 	}
 }
@@ -61,42 +73,35 @@ func (c *TestUser) Run(cliConnection plugin.CliConnection, args []string) {
 func (c *TestUser) RunCommands(cliConnection plugin.CliConnection, args []string) {
 
 	output, success := c.CreateUser(cliConnection, args)
-	AddMessages(output, success)
+	PrintMessages(output, success)
 
 	output, success = c.CreateOrg(cliConnection, args)
-	AddMessages(output, success)
-	fmt.Println(OutputMessages)
-	PrintMessages(OutputMessages)
+	PrintMessages(output, success)
+
+	output, success = c.CreateSpace(cliConnection, args)
+	PrintMessages(output, success)
+
+	output, success = c.OrgRoles(cliConnection, args)
+	PrintMessages(output, success)
+
+	output, success = c.SpaceRoles(cliConnection, args)
+	PrintMessages(output, success)
 
 }
 
-func PrintMessages(OutputMessages []string) {
-	for _, v := range OutputMessages {
-		fmt.Println(colorstring.Color(v))
-	}
-}
-
-func AddMessages(output []string, success []int) {
+func PrintMessages(output []string, success []int) {
 	for i, v := range output {
 		switch success[i] {
 		case 0:
-			OutputMessages = append(OutputMessages, "[red][1/10] "+v)
+			fmt.Println(colorstring.Color("[red]" + CommandCounter() + v))
 		case 1:
-			OutputMessages = append(OutputMessages, "[green][1/10] "+v)
+			fmt.Println(colorstring.Color("[green]" + CommandCounter() + v))
 		case 2:
-			OutputMessages = append(OutputMessages, "[cyan][1/10]"+v)
+			fmt.Println(colorstring.Color("[cyan]" + CommandCounter() + v))
 		}
-	}
-}
 
-func SearchIntSlice(slice []int, seek int) (answer bool) {
-	for _, v := range slice {
-		if v == seek {
-			return true
-		}
+		CmdRunCount++
 	}
-
-	return false
 }
 
 func (c *TestUser) CreateUser(cliConnection plugin.CliConnection, args []string) (output []string, success []int) {
@@ -118,9 +123,9 @@ func (c *TestUser) CreateOrg(cliConnection plugin.CliConnection, args []string) 
 
 	output = append(output, "Created Organisation development")
 
-	output, err := cliConnection.CliCommandWithoutTerminalOutput("create-org", "development")
+	x, err := cliConnection.CliCommandWithoutTerminalOutput("create-org", "development")
 
-	if output != nil && strings.Contains(output[0], "already exists") {
+	if x != nil && strings.Contains(output[0], "already exists") {
 		success = append(success, 2)
 	} else if err != nil {
 		success = append(success, 0)
@@ -135,9 +140,9 @@ func (c *TestUser) CreateSpace(cliConnection plugin.CliConnection, args []string
 
 	output = append(output, "Created Space development")
 
-	output, err := cliConnection.CliCommandWithoutTerminalOutput("create-space", "development", "-o", "development")
+	x, err := cliConnection.CliCommandWithoutTerminalOutput("create-space", "development", "-o", "development")
 
-	if output != nil && strings.Contains(output[0], "already exists") {
+	if x != nil && strings.Contains(output[0], "already exists") {
 		success = append(success, 2)
 	} else if err != nil {
 		success = append(success, 0)
