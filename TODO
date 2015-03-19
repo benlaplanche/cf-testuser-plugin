@@ -1,3 +1,6 @@
-# Refactor the Org & Space roles
-# Move text color coding outside of the functions into main
+# fix idempotent actions on creating orgs / spaces
+# fix messaging, username is hard coded to me
+# silence create space commands
 # Add additional args to override hard coded org & space name
+# add step 10 to log in as the new user
+# refactor!
