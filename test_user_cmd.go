@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/cloudfoundry/cli/plugin"
 	"github.com/mitchellh/colorstring"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -44,10 +43,11 @@ func SearchIntSlice(slice []int, seek int) (result bool) {
 	return false
 }
 
-func ExitIf(success []int) {
-	if SearchIntSlice(success, 0) == true {
-		os.Exit(1)
+func FoundError(status []int) (response bool) {
+	if SearchIntSlice(status, 0) == true {
+		return true
 	}
+	return false
 }
 
 func (c *TestUser) GetMetadata() plugin.PluginMetadata {
@@ -87,33 +87,43 @@ func (c *TestUser) Run(cliConnection plugin.CliConnection, args []string) {
 	}
 }
 
-func (c *TestUser) RunCommands(cliConnection plugin.CliConnection, args []string) {
+func (c *TestUser) RunCommands(cliConnection plugin.CliConnection, args []string) (response bool) {
 
-	output, success := c.CreateUser(cliConnection, args)
-	PrintMessages(output, success)
-	ExitIf(success)
+	output, status := c.CreateUser(cliConnection, args)
+	PrintMessages(output, status)
+	if FoundError(status) == true {
+		return
+	}
 
-	output, success = c.CreateOrg(cliConnection, args)
-	PrintMessages(output, success)
-	ExitIf(success)
+	output, status = c.CreateOrg(cliConnection, args)
+	PrintMessages(output, status)
+	if FoundError(status) == true {
+		return
+	}
 
-	output, success = c.CreateSpace(cliConnection, args)
-	PrintMessages(output, success)
-	ExitIf(success)
+	output, status = c.CreateSpace(cliConnection, args)
+	PrintMessages(output, status)
+	if FoundError(status) == true {
+		return
+	}
 
-	output, success = c.OrgRoles(cliConnection, args)
-	PrintMessages(output, success)
-	ExitIf(success)
+	output, status = c.OrgRoles(cliConnection, args)
+	PrintMessages(output, status)
+	if FoundError(status) == true {
+		return
+	}
 
-	output, success = c.SpaceRoles(cliConnection, args)
-	PrintMessages(output, success)
-	ExitIf(success)
-
+	output, status = c.SpaceRoles(cliConnection, args)
+	PrintMessages(output, status)
+	if FoundError(status) == true {
+		return
+	}
+	return
 }
 
-func PrintMessages(output []string, success []int) {
+func PrintMessages(output []string, status []int) {
 	for i, v := range output {
-		switch success[i] {
+		switch status[i] {
 		case 0:
 			fmt.Println(colorstring.Color("[red]" + CommandCounter() + v))
 		case 1:
@@ -126,56 +136,56 @@ func PrintMessages(output []string, success []int) {
 	}
 }
 
-func (c *TestUser) CreateUser(cliConnection plugin.CliConnection, args []string) (output []string, success []int) {
+func (c *TestUser) CreateUser(cliConnection plugin.CliConnection, args []string) (output []string, status []int) {
 
 	output = append(output, "Created user "+args[1])
 
 	_, err := cliConnection.CliCommandWithoutTerminalOutput("create-user", args[1], args[2])
 
 	if err != nil {
-		success = append(success, 0)
+		status = append(status, 0)
 	} else {
-		success = append(success, 1)
+		status = append(status, 1)
 	}
 
 	return
 }
 
-func (c *TestUser) CreateOrg(cliConnection plugin.CliConnection, args []string) (output []string, success []int) {
+func (c *TestUser) CreateOrg(cliConnection plugin.CliConnection, args []string) (output []string, status []int) {
 
 	output = append(output, "Created Organisation development")
 
 	x, err := cliConnection.CliCommandWithoutTerminalOutput("create-org", "development")
 
 	if x != nil && strings.Contains(x[0], "already exists") {
-		success = append(success, 2)
+		status = append(status, 2)
 	} else if err != nil {
-		success = append(success, 0)
+		status = append(status, 0)
 	} else {
-		success = append(success, 1)
+		status = append(status, 1)
 	}
 
 	return
 }
 
-func (c *TestUser) CreateSpace(cliConnection plugin.CliConnection, args []string) (output []string, success []int) {
+func (c *TestUser) CreateSpace(cliConnection plugin.CliConnection, args []string) (output []string, status []int) {
 
 	output = append(output, "Created Space development")
 
 	x, err := cliConnection.CliCommandWithoutTerminalOutput("create-space", "development", "-o", "development")
 
 	if x != nil && strings.Contains(x[0], "already exists") {
-		success = append(success, 2)
+		status = append(status, 2)
 	} else if err != nil {
-		success = append(success, 0)
+		status = append(status, 0)
 	} else {
-		success = append(success, 1)
+		status = append(status, 1)
 	}
 
 	return
 }
 
-func (c *TestUser) OrgRoles(cliConnection plugin.CliConnection, args []string) (output []string, success []int) {
+func (c *TestUser) OrgRoles(cliConnection plugin.CliConnection, args []string) (output []string, status []int) {
 
 	for _, v := range OrgRoles {
 		output = append(output, "Assigned "+v+" to me in Org development")
@@ -184,15 +194,15 @@ func (c *TestUser) OrgRoles(cliConnection plugin.CliConnection, args []string) (
 
 		if err != nil {
 			break
-			success = append(success, 0)
+			status = append(status, 0)
 		} else {
-			success = append(success, 1)
+			status = append(status, 1)
 		}
 	}
 	return
 }
 
-func (c *TestUser) SpaceRoles(cliConnection plugin.CliConnection, args []string) (output []string, success []int) {
+func (c *TestUser) SpaceRoles(cliConnection plugin.CliConnection, args []string) (output []string, status []int) {
 
 	for _, v := range SpaceRoles {
 		output = append(output, "Assigned "+v+" to me in Space development")
@@ -201,9 +211,9 @@ func (c *TestUser) SpaceRoles(cliConnection plugin.CliConnection, args []string)
 
 		if err != nil {
 			break
-			success = append(success, 0)
+			status = append(status, 0)
 		} else {
-			success = append(success, 1)
+			status = append(status, 1)
 		}
 	}
 	return
