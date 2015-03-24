@@ -129,7 +129,7 @@ var _ = Describe("TestUserCmd", func() {
 
 				Expect(output[2]).To(Equal(colorstring.Color("[red][3/10] Created Space development")))
 
-				// Expect(len(output)).To(Equal(4))
+				Expect(len(output)).To(Equal(4))
 			})
 		})
 
@@ -139,6 +139,8 @@ var _ = Describe("TestUserCmd", func() {
 				fakeCliConnection.CliCommandWithoutTerminalOutputStub =
 					func(args ...string) (output []string, err error) {
 						if args[0] == "create-org" {
+							output = append(output, "Creating org development as admin...")
+							output = append(output, "OK")
 							output = append(output, "Org development already exists")
 							return
 						}
@@ -161,6 +163,8 @@ var _ = Describe("TestUserCmd", func() {
 				fakeCliConnection.CliCommandWithoutTerminalOutputStub =
 					func(args ...string) (output []string, err error) {
 						if args[0] == "create-space" {
+							output = append(output, "Creating space development as admin...")
+							output = append(output, "OK")
 							output = append(output, "Space development already exists")
 							return
 						}

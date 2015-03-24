@@ -157,7 +157,7 @@ func (c *TestUser) CreateOrg(cliConnection plugin.CliConnection, args []string) 
 
 	x, err := cliConnection.CliCommandWithoutTerminalOutput("create-org", "development")
 
-	if x != nil && strings.Contains(x[0], "already exists") {
+	if x != nil && strings.Contains(x[2], "already exists") {
 		status = append(status, 2)
 	} else if err != nil {
 		status = append(status, 0)
@@ -174,7 +174,7 @@ func (c *TestUser) CreateSpace(cliConnection plugin.CliConnection, args []string
 
 	x, err := cliConnection.CliCommandWithoutTerminalOutput("create-space", "development", "-o", "development")
 
-	if x != nil && strings.Contains(x[0], "already exists") {
+	if x != nil && strings.Contains(x[2], "already exists") {
 		status = append(status, 2)
 	} else if err != nil {
 		status = append(status, 0)
@@ -207,7 +207,7 @@ func (c *TestUser) SpaceRoles(cliConnection plugin.CliConnection, args []string)
 	for _, v := range SpaceRoles {
 		output = append(output, "Assigned "+v+" to me in Space development")
 
-		_, err := cliConnection.CliCommand("set-space-role", args[1], "development", "development", v)
+		_, err := cliConnection.CliCommandWithoutTerminalOutput("set-space-role", args[1], "development", "development", v)
 
 		if err != nil {
 			break
