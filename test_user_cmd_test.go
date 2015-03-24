@@ -29,7 +29,7 @@ var _ = Describe("TestUserCmd", func() {
 				})
 
 				Expect(output[0]).To(Equal("Incorrect usage"))
-				Expect(output[1]).To(Equal("cf test-user <username> <password>"))
+				Expect(output[1]).To(Equal("cf test-user <username> <password> <optional org name> <optional space name>"))
 			})
 		})
 
@@ -179,6 +179,37 @@ var _ = Describe("TestUserCmd", func() {
 				Expect(output[2]).To(Equal(colorstring.Color("[cyan][3/10] Created Space development")))
 
 			})
+		})
+
+		Describe("Specifying a custom organisation and space", func() {
+
+			It("creates a the specified organisation and space", func() {
+				output := io_helpers.CaptureOutput(func() {
+					callCliCommandPlugin.Run(fakeCliConnection, []string{"test-user", "my-user", "my-password", "my-org", "my-space"})
+				})
+
+				Expect(output[0]).To(Equal(colorstring.Color("[green][1/10] Created user my-user")))
+
+				Expect(output[1]).To(Equal(colorstring.Color("[green][2/10] Created Organisation my-org")))
+
+				Expect(output[2]).To(Equal(colorstring.Color("[green][3/10] Created Space my-space")))
+
+				Expect(output[3]).To(Equal(colorstring.Color("[green][4/10] Assigned OrgManager to my-user in Org my-org")))
+
+				Expect(output[4]).To(Equal(colorstring.Color("[green][5/10] Assigned BillingManager to my-user in Org my-org")))
+
+				Expect(output[5]).To(Equal(colorstring.Color("[green][6/10] Assigned OrgAuditor to my-user in Org my-org")))
+
+				Expect(output[6]).To(Equal(colorstring.Color("[green][7/10] Assigned SpaceManager to my-user in Space my-space")))
+
+				Expect(output[7]).To(Equal(colorstring.Color("[green][8/10] Assigned SpaceDeveloper to my-user in Space my-space")))
+
+				Expect(output[8]).To(Equal(colorstring.Color("[green][9/10] Assigned SpaceAuditor to my-user in Space my-space")))
+
+				// Expect(output[9]).To(Equal(colorstring.Color("[green][10/10]  Logged out and logged in as me")))
+
+			})
+
 		})
 
 	})
