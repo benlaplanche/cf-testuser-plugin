@@ -16,13 +16,13 @@ type TestUser struct {
 	CmdRunCount int
 }
 
-var OrgRoles = []string{
+var assignOrgRoles = []string{
 	"OrgManager",
 	"BillingManager",
 	"OrgAuditor",
 }
 
-var SpaceRoles = []string{
+var assignSpaceRoles = []string{
 	"SpaceManager",
 	"SpaceDeveloper",
 	"SpaceAuditor",
@@ -32,14 +32,14 @@ const CmdTotalCount = 10
 const DefaultOrg = "development"
 const DefaultSpace = "development"
 
-func (c *TestUser) CommandCounter() (count string) {
+func (c *TestUser) commandCounter() (count string) {
 	current := strconv.Itoa(c.CmdRunCount)
 	total := strconv.Itoa(CmdTotalCount)
 
 	return "[" + current + "/" + total + "] "
 }
 
-func SearchIntSlice(slice []int, seek int) (result bool) {
+func searchIntSlice(slice []int, seek int) (result bool) {
 	for _, v := range slice {
 		if v == seek {
 			return true
@@ -49,14 +49,14 @@ func SearchIntSlice(slice []int, seek int) (result bool) {
 	return false
 }
 
-func FoundError(status []int) (response bool) {
-	if SearchIntSlice(status, 0) == true {
+func foundError(status []int) (response bool) {
+	if searchIntSlice(status, 0) == true {
 		return true
 	}
 	return false
 }
 
-func (c *TestUser) SetProperties(args []string) {
+func (c *TestUser) setProperties(args []string) {
 
 	c.UserName = args[1]
 	c.Password = args[2]
@@ -106,62 +106,62 @@ func (c *TestUser) Run(cliConnection plugin.CliConnection, args []string) {
 		fmt.Println(c.GetMetadata().Commands[0].UsageDetails.Usage)
 	} else {
 
-		c.SetProperties(args)
+		c.setProperties(args)
 
-		c.RunCommands(cliConnection)
+		c.runCommands(cliConnection)
 	}
 }
 
-func (c *TestUser) RunCommands(cliConnection plugin.CliConnection) (response bool) {
+func (c *TestUser) runCommands(cliConnection plugin.CliConnection) (response bool) {
 
-	output, status := c.CreateUser(cliConnection)
-	c.PrintMessages(output, status)
-	if FoundError(status) == true {
+	output, status := c.createUser(cliConnection)
+	c.printMessages(output, status)
+	if foundError(status) == true {
 		return
 	}
 
-	output, status = c.CreateOrg(cliConnection)
-	c.PrintMessages(output, status)
-	if FoundError(status) == true {
+	output, status = c.createOrg(cliConnection)
+	c.printMessages(output, status)
+	if foundError(status) == true {
 		return
 	}
 
-	output, status = c.CreateSpace(cliConnection)
-	c.PrintMessages(output, status)
-	if FoundError(status) == true {
+	output, status = c.createSpace(cliConnection)
+	c.printMessages(output, status)
+	if foundError(status) == true {
 		return
 	}
 
-	output, status = c.OrgRoles(cliConnection)
-	c.PrintMessages(output, status)
-	if FoundError(status) == true {
+	output, status = c.assignOrgRoles(cliConnection)
+	c.printMessages(output, status)
+	if foundError(status) == true {
 		return
 	}
 
-	output, status = c.SpaceRoles(cliConnection)
-	c.PrintMessages(output, status)
-	if FoundError(status) == true {
+	output, status = c.assignSpaceRoles(cliConnection)
+	c.printMessages(output, status)
+	if foundError(status) == true {
 		return
 	}
 	return
 }
 
-func (c *TestUser) PrintMessages(output []string, status []int) {
+func (c *TestUser) printMessages(output []string, status []int) {
 	for i, v := range output {
 		switch status[i] {
 		case 0:
-			fmt.Println(colorstring.Color("[red]" + c.CommandCounter() + v))
+			fmt.Println(colorstring.Color("[red]" + c.commandCounter() + v))
 		case 1:
-			fmt.Println(colorstring.Color("[green]" + c.CommandCounter() + v))
+			fmt.Println(colorstring.Color("[green]" + c.commandCounter() + v))
 		case 2:
-			fmt.Println(colorstring.Color("[cyan]" + c.CommandCounter() + v))
+			fmt.Println(colorstring.Color("[cyan]" + c.commandCounter() + v))
 		}
 
 		c.CmdRunCount++
 	}
 }
 
-func (c *TestUser) CreateUser(cliConnection plugin.CliConnection) (output []string, status []int) {
+func (c *TestUser) createUser(cliConnection plugin.CliConnection) (output []string, status []int) {
 
 	output = append(output, "Created user "+c.UserName)
 
@@ -176,7 +176,7 @@ func (c *TestUser) CreateUser(cliConnection plugin.CliConnection) (output []stri
 	return
 }
 
-func (c *TestUser) CreateOrg(cliConnection plugin.CliConnection) (output []string, status []int) {
+func (c *TestUser) createOrg(cliConnection plugin.CliConnection) (output []string, status []int) {
 
 	output = append(output, "Created Organisation "+c.OrgName)
 
@@ -193,7 +193,7 @@ func (c *TestUser) CreateOrg(cliConnection plugin.CliConnection) (output []strin
 	return
 }
 
-func (c *TestUser) CreateSpace(cliConnection plugin.CliConnection) (output []string, status []int) {
+func (c *TestUser) createSpace(cliConnection plugin.CliConnection) (output []string, status []int) {
 
 	output = append(output, "Created Space "+c.SpaceName)
 
@@ -210,9 +210,9 @@ func (c *TestUser) CreateSpace(cliConnection plugin.CliConnection) (output []str
 	return
 }
 
-func (c *TestUser) OrgRoles(cliConnection plugin.CliConnection) (output []string, status []int) {
+func (c *TestUser) assignOrgRoles(cliConnection plugin.CliConnection) (output []string, status []int) {
 
-	for _, role := range OrgRoles {
+	for _, role := range assignOrgRoles {
 		output = append(output, "Assigned "+role+" to "+c.UserName+" in Org "+c.OrgName)
 
 		_, err := cliConnection.CliCommandWithoutTerminalOutput("set-org-role", c.UserName, c.OrgName, role)
@@ -227,9 +227,9 @@ func (c *TestUser) OrgRoles(cliConnection plugin.CliConnection) (output []string
 	return
 }
 
-func (c *TestUser) SpaceRoles(cliConnection plugin.CliConnection) (output []string, status []int) {
+func (c *TestUser) assignSpaceRoles(cliConnection plugin.CliConnection) (output []string, status []int) {
 
-	for _, role := range SpaceRoles {
+	for _, role := range assignSpaceRoles {
 		output = append(output, "Assigned "+role+" to "+c.UserName+" in Space "+c.SpaceName)
 
 		_, err := cliConnection.CliCommandWithoutTerminalOutput("set-space-role", c.UserName, c.OrgName, c.SpaceName, role)
