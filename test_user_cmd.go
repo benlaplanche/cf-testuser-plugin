@@ -9,10 +9,11 @@ import (
 )
 
 type TestUser struct {
-	UserName  string
-	Password  string
-	OrgName   string
-	SpaceName string
+	UserName    string
+	Password    string
+	OrgName     string
+	SpaceName   string
+	CmdRunCount int
 }
 
 var OrgRoles = []string{
@@ -31,10 +32,8 @@ const CmdTotalCount = 10
 const DefaultOrg = "development"
 const DefaultSpace = "development"
 
-var CmdRunCount int
-
-func CommandCounter() (count string) {
-	current := strconv.Itoa(CmdRunCount)
+func (c *TestUser) CommandCounter() (count string) {
+	current := strconv.Itoa(c.CmdRunCount)
 	total := strconv.Itoa(CmdTotalCount)
 
 	return "[" + current + "/" + total + "] "
@@ -61,6 +60,7 @@ func (c *TestUser) SetProperties(args []string) {
 
 	c.UserName = args[1]
 	c.Password = args[2]
+	c.CmdRunCount = 1
 
 	if len(args) >= 4 {
 		c.OrgName = args[3]
@@ -108,8 +108,6 @@ func (c *TestUser) Run(cliConnection plugin.CliConnection, args []string) {
 
 		c.SetProperties(args)
 
-		CmdRunCount = 1
-
 		c.RunCommands(cliConnection)
 	}
 }
@@ -117,49 +115,49 @@ func (c *TestUser) Run(cliConnection plugin.CliConnection, args []string) {
 func (c *TestUser) RunCommands(cliConnection plugin.CliConnection) (response bool) {
 
 	output, status := c.CreateUser(cliConnection)
-	PrintMessages(output, status)
+	c.PrintMessages(output, status)
 	if FoundError(status) == true {
 		return
 	}
 
 	output, status = c.CreateOrg(cliConnection)
-	PrintMessages(output, status)
+	c.PrintMessages(output, status)
 	if FoundError(status) == true {
 		return
 	}
 
 	output, status = c.CreateSpace(cliConnection)
-	PrintMessages(output, status)
+	c.PrintMessages(output, status)
 	if FoundError(status) == true {
 		return
 	}
 
 	output, status = c.OrgRoles(cliConnection)
-	PrintMessages(output, status)
+	c.PrintMessages(output, status)
 	if FoundError(status) == true {
 		return
 	}
 
 	output, status = c.SpaceRoles(cliConnection)
-	PrintMessages(output, status)
+	c.PrintMessages(output, status)
 	if FoundError(status) == true {
 		return
 	}
 	return
 }
 
-func PrintMessages(output []string, status []int) {
+func (c *TestUser) PrintMessages(output []string, status []int) {
 	for i, v := range output {
 		switch status[i] {
 		case 0:
-			fmt.Println(colorstring.Color("[red]" + CommandCounter() + v))
+			fmt.Println(colorstring.Color("[red]" + c.CommandCounter() + v))
 		case 1:
-			fmt.Println(colorstring.Color("[green]" + CommandCounter() + v))
+			fmt.Println(colorstring.Color("[green]" + c.CommandCounter() + v))
 		case 2:
-			fmt.Println(colorstring.Color("[cyan]" + CommandCounter() + v))
+			fmt.Println(colorstring.Color("[cyan]" + c.CommandCounter() + v))
 		}
 
-		CmdRunCount++
+		c.CmdRunCount++
 	}
 }
 
