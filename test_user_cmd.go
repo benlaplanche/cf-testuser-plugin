@@ -32,8 +32,8 @@ const CmdTotalCount = 10
 const DefaultOrg = "development"
 const DefaultSpace = "development"
 
-func (c *TestUser) commandCounter() (count string) {
-	current := strconv.Itoa(c.CmdRunCount)
+func (t TestUser) commandCounter() (count string) {
+	current := strconv.Itoa(t.CmdRunCount)
 	total := strconv.Itoa(CmdTotalCount)
 
 	return "[" + current + "/" + total + "] "
