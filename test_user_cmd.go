@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/cloudfoundry/cli/plugin"
 	"github.com/mitchellh/colorstring"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -31,6 +32,14 @@ func (c *TestUser) setCommands() {
 			"create-user",
 			c.UserName,
 			c.Password,
+		},
+	}
+
+	c.Command[2] = CommandData{
+		Message: "Created Organisation " + c.OrgName,
+		ExecutionArguments: []string{
+			"create-org",
+			c.OrgName,
 		},
 	}
 }
@@ -129,23 +138,30 @@ func (c *TestUser) Run(cliConnection plugin.CliConnection, args []string) {
 		c.setProperties(args)
 		c.setCommands()
 
-		// c.runCommands(cliConnection)
-		// c.execCommand(cliConnection, c.Command[1])
-		output, status := c.execCommand(cliConnection, c.Command[1])
-		c.printMessages(output, status)
-		if foundError(status) == true {
-			return
+		// so we can iterate on the map in the desired order
+		var keys []int
+		for k := range c.Command {
+			keys = append(keys, k)
+		}
+		sort.Ints(keys)
+
+		for _, key := range keys {
+			output, status := c.execCommand(cliConnection, c.Command[key])
+			c.printMessages(output, status)
+			if foundError(status) == true {
+				return
+			}
 		}
 	}
 }
 
 func (t TestUser) execCommand(cliConnection plugin.CliConnection, command CommandData) (output []string, status []int) {
-	// fmt.Println(command.Message)
+
 	output = append(output, command.Message)
 
-	x, err := cliConnection.CliCommandWithoutTerminalOutput("create-user", t.UserName, t.Password)
+	response, err := cliConnection.CliCommandWithoutTerminalOutput(command.ExecutionArguments...)
 
-	if x != nil && strings.Contains(x[2], "already exists") {
+	if response != nil && strings.Contains(response[2], "already exists") {
 		status = append(status, 2)
 	} else if err != nil {
 		status = append(status, 0)
