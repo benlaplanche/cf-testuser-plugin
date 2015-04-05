@@ -8,12 +8,31 @@ import (
 	"strings"
 )
 
+type CommandData struct {
+	Message            string
+	ExecutionArguments []string
+}
+
 type TestUser struct {
 	UserName    string
 	Password    string
 	OrgName     string
 	SpaceName   string
 	CmdRunCount int
+	Command     map[int]CommandData
+}
+
+func (c *TestUser) setCommands() {
+	c.Command = make(map[int]CommandData)
+
+	c.Command[1] = CommandData{
+		Message: "Created user " + c.UserName,
+		ExecutionArguments: []string{
+			"create-user",
+			c.UserName,
+			c.Password,
+		},
+	}
 }
 
 var assignOrgRoles = []string{
@@ -73,6 +92,7 @@ func (c *TestUser) setProperties(args []string) {
 	} else {
 		c.SpaceName = DefaultSpace
 	}
+
 }
 
 func (c *TestUser) GetMetadata() plugin.PluginMetadata {
@@ -107,9 +127,33 @@ func (c *TestUser) Run(cliConnection plugin.CliConnection, args []string) {
 	} else {
 
 		c.setProperties(args)
+		c.setCommands()
 
-		c.runCommands(cliConnection)
+		// c.runCommands(cliConnection)
+		// c.execCommand(cliConnection, c.Command[1])
+		output, status := c.execCommand(cliConnection, c.Command[1])
+		c.printMessages(output, status)
+		if foundError(status) == true {
+			return
+		}
 	}
+}
+
+func (t TestUser) execCommand(cliConnection plugin.CliConnection, command CommandData) (output []string, status []int) {
+	// fmt.Println(command.Message)
+	output = append(output, command.Message)
+
+	x, err := cliConnection.CliCommandWithoutTerminalOutput("create-user", t.UserName, t.Password)
+
+	if x != nil && strings.Contains(x[2], "already exists") {
+		status = append(status, 2)
+	} else if err != nil {
+		status = append(status, 0)
+	} else {
+		status = append(status, 1)
+	}
+
+	return
 }
 
 func (t TestUser) runCommands(cliConnection plugin.CliConnection) (response bool) {
