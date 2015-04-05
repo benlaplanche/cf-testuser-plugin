@@ -36,7 +36,7 @@ var _ = Describe("TestUserCmd", func() {
 
 		Describe("Testing the happy path", func() {
 
-			FIt("creates a new user", func() {
+			It("creates a new user", func() {
 				output := io_helpers.CaptureOutput(func() {
 					callCliCommandPlugin.Run(fakeCliConnection, []string{"test-user", "me", "password"})
 				})
