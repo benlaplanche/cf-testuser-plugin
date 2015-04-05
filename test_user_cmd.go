@@ -42,18 +42,78 @@ func (c *TestUser) setCommands() {
 			c.OrgName,
 		},
 	}
-}
 
-var assignOrgRoles = []string{
-	"OrgManager",
-	"BillingManager",
-	"OrgAuditor",
-}
+	c.Command[3] = CommandData{
+		Message: "Created Space " + c.SpaceName,
+		ExecutionArguments: []string{
+			"create-space",
+			c.SpaceName,
+		},
+	}
 
-var assignSpaceRoles = []string{
-	"SpaceManager",
-	"SpaceDeveloper",
-	"SpaceAuditor",
+	c.Command[4] = CommandData{
+		Message: "Assigned OrgManager to " + c.UserName + " in Org " + c.OrgName,
+		ExecutionArguments: []string{
+			"set-org-role",
+			c.UserName,
+			c.OrgName,
+			"OrgManager",
+		},
+	}
+
+	c.Command[5] = CommandData{
+		Message: "Assigned BillingManager to " + c.UserName + " in Org " + c.OrgName,
+		ExecutionArguments: []string{
+			"set-org-role",
+			c.UserName,
+			c.OrgName,
+			"BillingManager",
+		},
+	}
+
+	c.Command[6] = CommandData{
+		Message: "Assigned OrgAuditor to " + c.UserName + " in Org " + c.OrgName,
+		ExecutionArguments: []string{
+			"set-org-role",
+			c.UserName,
+			c.OrgName,
+			"AuditorManager",
+		},
+	}
+
+	c.Command[7] = CommandData{
+		Message: "Assigned SpaceManager to " + c.UserName + " in Space " + c.SpaceName,
+		ExecutionArguments: []string{
+			"set-space-role",
+			c.UserName,
+			c.OrgName,
+			c.SpaceName,
+			"SpaceManager",
+		},
+	}
+
+	c.Command[8] = CommandData{
+		Message: "Assigned SpaceDeveloper to " + c.UserName + " in Space " + c.SpaceName,
+		ExecutionArguments: []string{
+			"set-org-role",
+			c.UserName,
+			c.OrgName,
+			c.SpaceName,
+			"SpaceDeveloper",
+		},
+	}
+
+	c.Command[9] = CommandData{
+		Message: "Assigned SpaceAuditor to " + c.UserName + " in Space " + c.SpaceName,
+		ExecutionArguments: []string{
+			"set-org-role",
+			c.UserName,
+			c.OrgName,
+			c.SpaceName,
+			"SpaceAuditor",
+		},
+	}
+
 }
 
 const CmdTotalCount = 10
@@ -172,40 +232,6 @@ func (t TestUser) execCommand(cliConnection plugin.CliConnection, command Comman
 	return
 }
 
-func (t TestUser) runCommands(cliConnection plugin.CliConnection) (response bool) {
-
-	output, status := t.createUser(cliConnection)
-	t.printMessages(output, status)
-	if foundError(status) == true {
-		return
-	}
-
-	output, status = t.createOrg(cliConnection)
-	t.printMessages(output, status)
-	if foundError(status) == true {
-		return
-	}
-
-	output, status = t.createSpace(cliConnection)
-	t.printMessages(output, status)
-	if foundError(status) == true {
-		return
-	}
-
-	output, status = t.assignOrgRoles(cliConnection)
-	t.printMessages(output, status)
-	if foundError(status) == true {
-		return
-	}
-
-	output, status = t.assignSpaceRoles(cliConnection)
-	t.printMessages(output, status)
-	if foundError(status) == true {
-		return
-	}
-	return
-}
-
 func (t *TestUser) printMessages(output []string, status []int) {
 	for i, v := range output {
 		switch status[i] {
@@ -219,87 +245,4 @@ func (t *TestUser) printMessages(output []string, status []int) {
 
 		t.CmdRunCount++
 	}
-}
-
-func (t TestUser) createUser(cliConnection plugin.CliConnection) (output []string, status []int) {
-
-	output = append(output, "Created user "+t.UserName)
-
-	_, err := cliConnection.CliCommandWithoutTerminalOutput("create-user", t.UserName, t.Password)
-
-	if err != nil {
-		status = append(status, 0)
-	} else {
-		status = append(status, 1)
-	}
-
-	return
-}
-
-func (t TestUser) createOrg(cliConnection plugin.CliConnection) (output []string, status []int) {
-
-	output = append(output, "Created Organisation "+t.OrgName)
-
-	x, err := cliConnection.CliCommandWithoutTerminalOutput("create-org", t.OrgName)
-
-	if x != nil && strings.Contains(x[2], "already exists") {
-		status = append(status, 2)
-	} else if err != nil {
-		status = append(status, 0)
-	} else {
-		status = append(status, 1)
-	}
-
-	return
-}
-
-func (t TestUser) createSpace(cliConnection plugin.CliConnection) (output []string, status []int) {
-
-	output = append(output, "Created Space "+t.SpaceName)
-
-	x, err := cliConnection.CliCommandWithoutTerminalOutput("create-space", t.OrgName, "-o", t.SpaceName)
-
-	if x != nil && strings.Contains(x[2], "already exists") {
-		status = append(status, 2)
-	} else if err != nil {
-		status = append(status, 0)
-	} else {
-		status = append(status, 1)
-	}
-
-	return
-}
-
-func (t TestUser) assignOrgRoles(cliConnection plugin.CliConnection) (output []string, status []int) {
-
-	for _, role := range assignOrgRoles {
-		output = append(output, "Assigned "+role+" to "+t.UserName+" in Org "+t.OrgName)
-
-		_, err := cliConnection.CliCommandWithoutTerminalOutput("set-org-role", t.UserName, t.OrgName, role)
-
-		if err != nil {
-			break
-			status = append(status, 0)
-		} else {
-			status = append(status, 1)
-		}
-	}
-	return
-}
-
-func (t TestUser) assignSpaceRoles(cliConnection plugin.CliConnection) (output []string, status []int) {
-
-	for _, role := range assignSpaceRoles {
-		output = append(output, "Assigned "+role+" to "+t.UserName+" in Space "+t.SpaceName)
-
-		_, err := cliConnection.CliCommandWithoutTerminalOutput("set-space-role", t.UserName, t.OrgName, t.SpaceName, role)
-
-		if err != nil {
-			break
-			status = append(status, 0)
-		} else {
-			status = append(status, 1)
-		}
-	}
-	return
 }
