@@ -109,4 +109,13 @@ func (c *TestUser) setCommands() {
 		},
 	}
 
+	c.Command[10] = CommandData{
+		Message: "Logged out and logged in as " + c.UserName,
+		ExecutionArguments: []string{
+			"auth",
+			c.UserName,
+			c.Password,
+		},
+	}
+
 }

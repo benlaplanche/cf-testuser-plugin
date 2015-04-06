@@ -58,7 +58,7 @@ var _ = Describe("TestUserCmd", func() {
 
 				Expect(output[8]).To(Equal(colorstring.Color("[green][9/10] Assigned SpaceAuditor to me in Space development")))
 
-				// Expect(output[9]).To(Equal(colorstring.Color("[green][10/10]  Logged out and logged in as me")))
+				Expect(output[9]).To(Equal(colorstring.Color("[green][10/10] Logged out and logged in as me")))
 
 			})
 
@@ -206,7 +206,7 @@ var _ = Describe("TestUserCmd", func() {
 
 				Expect(output[8]).To(Equal(colorstring.Color("[green][9/10] Assigned SpaceAuditor to my-user in Space my-space")))
 
-				// Expect(output[9]).To(Equal(colorstring.Color("[green][10/10]  Logged out and logged in as me")))
+				Expect(output[9]).To(Equal(colorstring.Color("[green][10/10] Logged out and logged in as my-user")))
 
 			})
 
