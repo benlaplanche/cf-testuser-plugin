@@ -1,17 +1,20 @@
 package main_test
 
 import (
-	"github.com/cloudfoundry/cli/testhelpers/plugin_builder"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
+	"os/exec"
 	"testing"
 )
 
 func TestMain(t *testing.T) {
 	RegisterFailHandler(Fail)
 
-	plugin_builder.BuildTestBinary(".", "test_user_cmd")
+	cmd := exec.Command("go", "build", "-o", "test_user_cmd.exe")
+	err := cmd.Run()
+	if err != nil {
+		panic(err)
+	}
 
 	RunSpecs(t, "Main Suite")
 }
