@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/cloudfoundry/cli/plugin"
-	"github.com/mitchellh/colorstring"
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/cloudfoundry/cli/plugin"
+	"github.com/mitchellh/colorstring"
 )
 
 func main() {
